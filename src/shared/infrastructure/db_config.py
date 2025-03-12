@@ -4,7 +4,8 @@ from src.shared.config import SingletonMeta, setting
 
 class Mongo(metaclass=SingletonMeta):
     def __init__(self):
-        self.db = MongoClient(setting.mongodb_host)
+        client = MongoClient(setting.mongodb_host)
+        self.db = client["IRDWebsite"]
 
     def get_db(self):
         return self.db

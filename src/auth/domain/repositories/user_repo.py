@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import List
-from src.auth.domain.entities.users_entity import UserStore
 
 
 class IUserRepository(ABC):
 
     @abstractmethod
-    def create(user: UserStore) -> dict:  # Returns UserOut in case of
+    def create(user: dict) -> dict:  # Returns UserOut in case of
         ...
 
     @abstractmethod

@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List
 
 
 class IUserRepository(ABC):
@@ -18,8 +17,4 @@ class IUserRepository(ABC):
 
     @abstractmethod
     def delete(username: str) -> dict:
-        ...
-
-    @abstractmethod
-    def get_all() -> List:
         ...

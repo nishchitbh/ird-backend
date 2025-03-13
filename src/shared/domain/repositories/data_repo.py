@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class DataRepo(ABC):
+class IDataRepo(ABC):
     @abstractmethod
     def handle_error(self, exception: Exception) -> dict:
         ...

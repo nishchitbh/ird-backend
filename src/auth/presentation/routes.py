@@ -61,6 +61,7 @@ def update_me(
     except AppException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+
 @user_router.patch("/me/password", response_model=UserOut, status_code=status.HTTP_200_OK)
 def change_password(
     password_data: ChangePassword,
@@ -74,5 +75,35 @@ def change_password(
         password = password_data.password
         new_password = password_data.new_password
         return auth_use_cases.change_password(current_user, password, new_password)
+    except AppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+
+@user_router.delete("/", status_code=status.HTTP_200_OK)
+def delete_user(
+    username: str,
+    current_user: UserOut = Depends(get_current_user),
+    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
+):
+    """
+    Deletes a user.
+    """
+    try:
+        return auth_use_cases.delete_user(username, current_user)
+    except AppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+
+@user_router.post("/reset-password/", status_code=status.HTTP_200_OK)
+def reset_password(
+    username: str,
+    current_user: UserOut = Depends(get_current_user),
+    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
+):
+    """
+    Resets a user's password.
+    """
+    try:
+        return auth_use_cases.reset_password(username, current_user)
     except AppException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

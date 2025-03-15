@@ -59,7 +59,27 @@ class AuthUseCases:
 
     def update_user(self, current_user: UserOut, update_data: dict) -> dict:
         username = current_user.username
+        update_data = update_data.model_dump()
+        print(update_data)
+        update_data = {k: v for k, v in update_data.items() if v is not None}
         if "password" in update_data.keys():
             raise InvalidUpdateException(
                 "Cannot update password. Use reset password instead.")
         return self.user_repo.update(username, update_data)
+
+    def reset_password(self, username: str, current_user: UserOut) -> dict:
+        if not current_user.admin:
+            raise AuthenticationFailedException("Unauthorized")
+        if not self.user_repo.read(username):
+            raise UserNotFoundException(
+                f"User with username {username} not found")
+        new_password = self.auth_services.generate_password()
+        hashed_password = self.auth_services.hash_password(new_password)
+        data = self.user_repo.update(username, {"password": hashed_password})
+        return {
+            "status": "ok",
+            "message": "Password reset successfully",
+            "username": data["username"],
+            "new_password": new_password
+        }
+    

@@ -7,6 +7,11 @@ class AppException(Exception):
         super().__init__(message)
 
 
+class PasswordValidationException(AppException):
+    def __init__(self, message: str):
+        super().__init__(message, 400)
+
+
 class UserNotFoundException(AppException):
     """Exception for when a user is not found."""
 

@@ -1,10 +1,9 @@
 from src.auth.domain.repositories.user_repo import IUserRepository
 from src.shared.config import setting
-from src.auth.domain.entities.users_entity import UserOut, UserStore
+from src.auth.domain.entities.users_entity import UserStore
 from datetime import datetime, timedelta
 import jwt
 from jwt import PyJWTError
-from typing import Optional
 from passlib.context import CryptContext
 
 
@@ -25,16 +24,16 @@ class AuthService:
         to_encode.update({"exp": expire})
         return jwt.encode(to_encode, setting.auth_secret, algorithm=setting.algorithm)
 
-    def verify_token(self, token: str) -> Optional[UserOut]:
+    def verify_token(self, token: str, credentials_exception) -> dict:
         try:
-            payload = jwt.decode(token, setting.secret_key,
+            payload = jwt.decode(token, setting.auth_secret,
                                  algorithms=[setting.algorithm])
-            username: int = payload.get("username")
+            username = payload.get("username")
             if username is None:
-                return None
-            return self.user_repository.read(username)
+                raise credentials_exception
+            return payload
         except PyJWTError:
-            return None
+            raise credentials_exception
 
 
 class UserService:

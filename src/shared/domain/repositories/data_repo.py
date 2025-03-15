@@ -3,10 +3,6 @@ from abc import ABC, abstractmethod
 
 class IDataRepo(ABC):
     @abstractmethod
-    def handle_error(self, exception: Exception) -> dict:
-        ...
-
-    @abstractmethod
     def create(self, data: dict) -> dict:
         ...
 

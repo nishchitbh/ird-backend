@@ -17,10 +17,7 @@ class UserRegister(UserLogin):
     education: Optional[str]
 
 
-class UserStore(UserLogin):
-    name: str
-    position: Optional[str]
-    education: Optional[str]
+class UserStore(UserRegister):
     approved: bool = False
     admin: bool = False
     created_at: datetime
@@ -33,3 +30,13 @@ class UserOut(UserBase):
     education: Optional[str]
     approved: bool
     admin: bool
+
+
+class UserUpdate(BaseModel):
+    name: Optional[str]
+    position: Optional[str]
+    education: Optional[str]
+    
+class ChangePassword(BaseModel):
+    password: str
+    new_password: str

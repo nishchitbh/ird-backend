@@ -1,0 +1,42 @@
+class AppException(Exception):
+    """Base exception class for the application."""
+
+    def __init__(self, message: str = "An error occurred", status_code: int = 400):
+        self.detail = message
+        self.status_code = status_code
+        super().__init__(message)
+
+
+class UserNotFoundException(AppException):
+    """Exception for when a user is not found."""
+
+    def __init__(self, message: str = "User not found"):
+        super().__init__(message, 404)
+
+
+class DatabaseException(AppException):
+    """Exception for database errors."""
+
+    def __init__(self, message: str = "Database operation failed"):
+        super().__init__(message, 500)
+
+
+class AuthenticationFailedException(AppException):
+    """Exception for authentication errors."""
+
+    def __init__(self, message: str = "Incorrect username or password"):
+        super().__init__(message, 401)
+
+
+class InvalidUpdateException(AppException):
+    """Exception for invalid update operations."""
+
+    def __init__(self, message: str = "Invalid update operation"):
+        super().__init__(message, 400)  # 400 Bad Request
+
+
+class UserAlreadyExistsException(AppException):
+    """Exception raised when trying to create a user that already exists."""
+
+    def __init__(self, message: str = "User already exists"):
+        super().__init__(message, 409)  # 409 Conflict

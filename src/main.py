@@ -1,6 +1,11 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Request
+import logging
+import traceback
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from src.auth.presentation.routes import auth_router, user_router
+from src.shared.domain.exceptions import AppException
+
 
 app = FastAPI()
 
@@ -11,6 +16,33 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(AppException)
+async def app_exception_handler(request: Request, exc: AppException):
+    """Handles custom application exceptions."""
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.message},
+    )
+
+logging.basicConfig(level=logging.ERROR)
+logger = logging.getLogger(__name__)
+
+
+@app.exception_handler(Exception)
+async def generic_exception_handler(request: Request, exc: Exception):
+    """Handles all unexpected exceptions."""
+
+    # Log the error with traceback for debugging
+    logger.error(f"Unexpected error: {str(exc)}")
+    logger.error(traceback.format_exc())
+
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": "An internal server error occurred. Please try again later."},
+    )
 
 
 @app.get("/", tags=["Root"])
@@ -24,27 +56,3 @@ api_router.include_router(auth_router)
 api_router.include_router(user_router)
 
 app.include_router(api_router)
-
-# To be setup later
-# def custom_openapi():
-#     if app.openapi_schema:
-#         return app.openapi_schema
-#     openapi_schema = get_openapi(
-#         title="IRD Web Backend",
-#         version="1.0.0",
-#         routes=app.routes,
-#     )
-#     updated_paths = {}
-#     for path, path_data in openapi_schema["paths"].items():
-#         new_path = path.replace("/api/v1", "", 1)
-#         updated_paths[new_path] = path_data
-
-#     openapi_schema["paths"] = updated_paths
-
-#     openapi_schema["servers"] = [
-#         {"url": "/api/v1", "description": "Base API URL"}]
-
-#     app.openapi_schema = openapi_schema
-#     return app.openapi_schema
-
-# app.openapi = custom_openapi

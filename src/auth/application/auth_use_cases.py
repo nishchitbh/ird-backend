@@ -1,8 +1,7 @@
 from datetime import datetime
 from src.auth.domain.services.auth_services import AuthService, UserService
 from src.auth.domain.repositories.user_repo import IUserRepository
-from src.auth.domain.entities.users_entity import UserRegister, UserStore
-from src.auth.domain.entities.users_entity import UserOut
+from src.auth.domain.entities.users_entity import UserRegister, UserStore, UserOut, UserUpdate, UserUpdateAdmin
 from src.shared.domain.exceptions import (
     UserNotFoundException,
     AuthenticationFailedException,
@@ -57,10 +56,9 @@ class AuthUseCases:
             "username": data["username"]
         }
 
-    def update_user(self, current_user: UserOut, update_data: dict) -> dict:
+    def update_user(self, current_user: UserOut, update_data: UserUpdate) -> dict:
         username = current_user.username
         update_data = update_data.model_dump()
-        print(update_data)
         update_data = {k: v for k, v in update_data.items() if v is not None}
         if "password" in update_data.keys():
             raise InvalidUpdateException(
@@ -82,4 +80,17 @@ class AuthUseCases:
             "username": data["username"],
             "new_password": new_password
         }
-    
+
+    def update_other_user(self, current_user: UserOut, username: str, update_data: UserUpdateAdmin) -> dict:
+        if not current_user.admin:
+            raise AuthenticationFailedException("Unauthorized")
+        update_data = update_data.model_dump()
+        update_data = {k: v for k, v in update_data.items() if v is not None}
+        if not self.user_repo.read(username):
+            raise UserNotFoundException(
+                f"User with username {username} not found")
+        result = self.user_repo.update(username, update_data)
+        return {
+            "status": "ok",
+            "message": "User updated successfully",
+            "username": result["username"]}

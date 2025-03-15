@@ -3,6 +3,7 @@ from pymongo.errors import ConnectionFailure, OperationFailure, WriteError, Inva
 from src.shared.domain.repositories.data_repo import IDataRepo
 from fastapi import HTTPException
 
+
 class MongoRepo(IDataRepo):
     def __init__(self, db: Database, collection: str):
         self.db = db

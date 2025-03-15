@@ -56,6 +56,11 @@ class UserUpdate(BaseModel):
     education: Optional[str] = None
 
 
+class UserUpdateAdmin(UserUpdate):
+    admin: Optional[bool] = False
+    authorized: Optional[bool] = False
+
+
 class ChangePassword(BaseModel):
     password: str
     new_password: str

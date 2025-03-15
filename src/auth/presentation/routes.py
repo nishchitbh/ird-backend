@@ -2,7 +2,7 @@ from fastapi import Depends, status, HTTPException
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from src.auth.application.auth_use_cases import AuthUseCases
 from src.auth.presentation.config import auth_router, user_router, get_current_user, get_auth_use_cases
-from src.auth.domain.entities.users_entity import UserOut, UserRegister, UserUpdate, ChangePassword
+from src.auth.domain.entities.users_entity import UserOut, UserRegister, UserUpdate, ChangePassword, UserUpdateAdmin
 from src.shared.domain.exceptions import AppException
 
 
@@ -105,5 +105,21 @@ def reset_password(
     """
     try:
         return auth_use_cases.reset_password(username, current_user)
+    except AppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+
+@user_router.patch("/update-user/", status_code=status.HTTP_200_OK)
+def update_other_user(
+    username: str,
+    update_data: UserUpdateAdmin,
+    current_user: UserOut = Depends(get_current_user),
+    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
+):
+    """
+    Updates a user.
+    """
+    try:
+        return auth_use_cases.update_other_user(current_user, username, update_data)
     except AppException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

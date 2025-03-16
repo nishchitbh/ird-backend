@@ -2,7 +2,6 @@ from pymongo.database import Database
 from pymongo.errors import ConnectionFailure, OperationFailure, WriteError, InvalidOperation
 from src.shared.domain.repositories.data_repo import IDataRepo
 from fastapi import HTTPException
-from bson import ObjectId
 
 
 class MongoRepo(IDataRepo):

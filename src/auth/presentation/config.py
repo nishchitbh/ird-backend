@@ -6,14 +6,11 @@ from src.auth.application.auth_use_cases import AuthUseCases
 from src.shared.infrastructure.db_config import get_db
 from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordBearer
-from pymongo.database import Database
-
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 user_router = APIRouter(prefix="/user", tags=["User"])
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
 def get_auth_use_cases():
     db = get_db()
@@ -28,14 +25,16 @@ def get_auth_use_cases():
 def get_current_user(
     token: str = Depends(oauth2_scheme),
     auth_use_cases: AuthUseCases = Depends(get_auth_use_cases),
-    db: Database = Depends(get_db)
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    token = auth_use_cases.verify_token(
-        token, credentials_exception=credentials_exception)
-    user = auth_use_cases.user_repo.read(token["username"])
+    token_payload = auth_use_cases.auth_services.verify_token(
+        token, credentials_exception)
+    user = auth_use_cases.user_repo.read(token_payload["username"])
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
     return UserOut(**user)

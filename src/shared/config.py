@@ -8,7 +8,7 @@ load_dotenv()
 class Setting:
     mongodb_host = os.getenv("MONGODB_host")
     auth_secret = os.getenv("AUTH_SECRET")
-    access_token_expiry_time = os.getenv("ACCESS_TOKEN_EXPIRY_TIME")
+    access_token_expiry_time = int(os.getenv("ACCESS_TOKEN_EXPIRY_TIME"))
     algorithm = os.getenv("ALGORITHM")
 
 

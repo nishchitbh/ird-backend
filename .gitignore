@@ -2,3 +2,7 @@
 /.env
 /try.py
 **/__pycache__
+/areasOfWork.json
+/eventsLists.json
+/joinUsPrograms.json
+/frontend-schemas

@@ -22,13 +22,3 @@ class IGalleryRepo(ABC):
     @abstractmethod
     def read_all(self) -> dict:
         ...
-
-
-class IScraper(ABC):
-    @abstractmethod
-    def scrape_shortcodes(self, username: str) -> list:
-        ...
-
-    @abstractmethod
-    def scrape_posts(self, shortcode: str) -> dict:
-        ...

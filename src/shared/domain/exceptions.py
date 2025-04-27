@@ -11,14 +11,6 @@ class PasswordValidationException(AppException):
     def __init__(self, message: str):
         super().__init__(message, 400)
 
-
-class UserNotFoundException(AppException):
-    """Exception for when a user is not found."""
-
-    def __init__(self, message: str = "User not found"):
-        super().__init__(message, 404)
-
-
 class DatabaseException(AppException):
     """Exception for database errors."""
 
@@ -45,3 +37,13 @@ class UserAlreadyExistsException(AppException):
 
     def __init__(self, message: str = "User already exists"):
         super().__init__(message, 409)  # 409 Conflict
+        
+class ItemNotFoundException(AppException):
+    """Exception raised when an item is not found."""
+
+    def __init__(self, message: str = "Item not found"):
+        super().__init__(message, 404)  # 404 Not Found
+
+class UnauthorizedException(AppException):
+    def __init__(self, message: str = "Unauthorized"):
+        super().__init__(message, 401)

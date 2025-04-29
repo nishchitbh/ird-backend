@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
-from src.gallery.domain.entities import Gallery
+from src.gallery.domain.entities import GalleryStore
 
 
 class IGalleryRepo(ABC):
     @abstractmethod
-    def create(self, gallery: Gallery) -> dict:
+    def create(self, gallery: GalleryStore) -> dict:
         ...
 
     @abstractmethod
-    def update(self, id: str) -> dict:
+    def update(self, id: str, update_data: dict) -> dict:
         ...
 
     @abstractmethod

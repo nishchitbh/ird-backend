@@ -95,3 +95,16 @@ class AuthUseCases:
             "status": "ok",
             "message": "User updated successfully",
             "username": result["username"]}
+
+    def get_one_user(self, current_user: UserOut, username: str) -> dict:
+        if not current_user.admin:
+            raise UnauthorizedException("You cannot perform this action.")
+        if not self.user_repo.read(username):
+            raise ItemNotFoundException(
+                f"User with username {username} not found")
+        return self.user_repo.read(username)
+    
+    def get_all_users(self, current_user: UserOut) -> list:
+        if not current_user.admin:
+            raise UnauthorizedException("You cannot perform this action.")
+        return self.user_repo.read_all()

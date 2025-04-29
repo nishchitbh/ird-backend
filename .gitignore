@@ -2,3 +2,4 @@
 /.env
 /try.py
 **/__pycache__
+.python-version

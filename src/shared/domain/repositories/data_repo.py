@@ -17,3 +17,7 @@ class IDataRepo(ABC):
     @abstractmethod
     def delete(self, identifier: dict) -> dict:
         ...
+
+    @abstractmethod
+    def read_all(self) -> dict:
+        ...

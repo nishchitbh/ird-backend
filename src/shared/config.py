@@ -10,7 +10,8 @@ class Setting:
     auth_secret = os.getenv("AUTH_SECRET")
     access_token_expiry_time = int(os.getenv("ACCESS_TOKEN_EXPIRY_TIME"))
     algorithm = os.getenv("ALGORITHM")
-
+    upload_folder = os.getenv("UPLOAD_FOLDER")
+    allowed_extensions = os.getenv("ALLOWED_EXTENSIONS").split(",")
 
 setting = Setting()
 

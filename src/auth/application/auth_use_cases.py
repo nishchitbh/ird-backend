@@ -3,10 +3,11 @@ from src.auth.domain.services.auth_services import AuthService, UserService
 from src.auth.domain.repositories.user_repo import IUserRepository
 from src.auth.domain.entities.users_entity import UserRegister, UserStore, UserOut, UserUpdate, UserUpdateAdmin
 from src.shared.domain.exceptions import (
-    UserNotFoundException,
+    ItemNotFoundException,
     AuthenticationFailedException,
     InvalidUpdateException,
-    UserAlreadyExistsException
+    UserAlreadyExistsException,
+    UnauthorizedException
 )
 
 
@@ -37,9 +38,9 @@ class AuthUseCases:
 
     def delete_user(self, username: str, current_user: UserOut) -> dict:
         if not current_user.admin:
-            raise AuthenticationFailedException("Unauthorized")
+            raise UnauthorizedException("You cannot perform this action.")
         if not self.user_repo.read(username):
-            raise UserNotFoundException(
+            raise ItemNotFoundException(
                 f"User with username {username} not found")
         return self.user_repo.delete(username)
 
@@ -67,9 +68,9 @@ class AuthUseCases:
 
     def reset_password(self, username: str, current_user: UserOut) -> dict:
         if not current_user.admin:
-            raise AuthenticationFailedException("Unauthorized")
+            raise UnauthorizedException("You cannot perform this action.")
         if not self.user_repo.read(username):
-            raise UserNotFoundException(
+            raise ItemNotFoundException(
                 f"User with username {username} not found")
         new_password = self.auth_services.generate_password()
         hashed_password = self.auth_services.hash_password(new_password)
@@ -83,14 +84,27 @@ class AuthUseCases:
 
     def update_other_user(self, current_user: UserOut, username: str, update_data: UserUpdateAdmin) -> dict:
         if not current_user.admin:
-            raise AuthenticationFailedException("Unauthorized")
+            raise UnauthorizedException("You cannot perform this action.")
         update_data = update_data.model_dump()
         update_data = {k: v for k, v in update_data.items() if v is not None}
         if not self.user_repo.read(username):
-            raise UserNotFoundException(
+            raise ItemNotFoundException(
                 f"User with username {username} not found")
         result = self.user_repo.update(username, update_data)
         return {
             "status": "ok",
             "message": "User updated successfully",
             "username": result["username"]}
+
+    def get_one_user(self, current_user: UserOut, username: str) -> dict:
+        if not current_user.admin:
+            raise UnauthorizedException("You cannot perform this action.")
+        if not self.user_repo.read(username):
+            raise ItemNotFoundException(
+                f"User with username {username} not found")
+        return self.user_repo.read(username)
+    
+    def get_all_users(self, current_user: UserOut) -> list:
+        if not current_user.admin:
+            raise UnauthorizedException("You cannot perform this action.")
+        return self.user_repo.read_all()

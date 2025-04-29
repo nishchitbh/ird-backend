@@ -68,3 +68,10 @@ class MongoRepo(IDataRepo):
                 }
         except Exception as e:
             self.handle_error(e)
+
+    def read_all(self) -> list:
+        try:
+            result = self.db[self.collection].find()
+            return [doc for doc in result]
+        except Exception as e:
+            self.handle_error(e)

@@ -94,7 +94,7 @@ def delete_user(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@user_router.post("/reset-password/", status_code=status.HTTP_200_OK)
+@user_router.post("/reset-password", status_code=status.HTTP_200_OK)
 def reset_password(
     username: str,
     current_user: UserOut = Depends(get_current_user),
@@ -109,7 +109,7 @@ def reset_password(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@user_router.patch("/update-user/", status_code=status.HTTP_200_OK)
+@user_router.patch("/update-user", status_code=status.HTTP_200_OK)
 def update_other_user(
     username: str,
     update_data: UserUpdateAdmin,
@@ -121,5 +121,32 @@ def update_other_user(
     """
     try:
         return auth_use_cases.update_other_user(current_user, username, update_data)
+    except AppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@user_router.post("/user", response_model=UserOut, status_code=status.HTTP_200_OK)
+def get_one_user(
+    username: str,
+    current_user: UserOut = Depends(get_current_user),
+    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
+):
+    """
+    Gets a user.
+    """
+    try:
+        return auth_use_cases.get_one_user(current_user, username)
+    except AppException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+@user_router.get("/users", response_model=list[UserOut], status_code=status.HTTP_200_OK)
+def get_all_users(
+    current_user: UserOut = Depends(get_current_user),
+    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
+):
+    """
+    Gets all users.
+    """
+    try:
+        return auth_use_cases.get_all_users(current_user)
     except AppException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

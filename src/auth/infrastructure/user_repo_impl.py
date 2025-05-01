@@ -18,3 +18,6 @@ class UserRepo(IUserRepository):
 
     def delete(self, username: str) -> dict:
         return self.repo.delete({"username": username})
+
+    def read_all(self) -> list:
+        return self.repo.read_all()

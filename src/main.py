@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from src.auth.presentation.routes import auth_router, user_router
 from src.shared.domain.exceptions import AppException
-
+from src.gallery.presentation.routes import gallery_router
 
 app = FastAPI()
 
@@ -54,5 +54,6 @@ api_router = APIRouter(prefix="/api")
 
 api_router.include_router(auth_router)
 api_router.include_router(user_router)
+api_router.include_router(gallery_router)
 
 app.include_router(api_router)

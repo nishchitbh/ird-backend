@@ -22,7 +22,7 @@ async def upload_photo(
             alt=alt,
             caption=caption,
         )
-        message = gallery_use_cases.create_gallery(
+        message = await gallery_use_cases.create_gallery(
             file=file,
             current_user=current_user,
             gallery=gallery_data

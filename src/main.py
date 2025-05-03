@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.auth.presentation.routes import auth_router, user_router
 from src.shared.domain.exceptions import AppException
 from src.gallery.presentation.routes import gallery_router
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
@@ -48,6 +49,13 @@ async def generic_exception_handler(request: Request, exc: Exception):
 @app.get("/", tags=["Root"])
 def read_root() -> dict:
     return {"message": "Hello World"}
+
+
+app.mount(
+    "/uploads",
+    StaticFiles(directory="static/uploads", html=False),
+    name="uploads",
+)
 
 
 api_router = APIRouter(prefix="/api")

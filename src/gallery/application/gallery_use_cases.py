@@ -4,16 +4,14 @@ from src.gallery.domain.repositories import IGalleryRepo
 from src.gallery.domain.services import GalleryService
 from src.shared.domain.exceptions import (
     AuthenticationFailedException,
-    ItemNotFoundException,
-    ForbiddenException,
-    RequestEntityTooLargeException
+    ItemNotFoundException
 )
 from src.shared.utils import safe_join
 from src.shared.config import setting
 from fastapi import UploadFile
 from bson import ObjectId
 from pathlib import Path
-import anyio
+import aiofiles
 import uuid
 import os
 
@@ -33,7 +31,10 @@ class GalleryUseCases:
         filename = f"{uuid.uuid4()}{extension}"
         target: Path = safe_join(setting.upload_folder, filename)
         target.parent.mkdir(parents=True, exist_ok=True)
-        src = f"{setting.upload_folder}/{filename}"
+        contents = await file.read()
+        async with aiofiles.open(target, "wb") as out_file:
+            await out_file.write(contents)
+        src = f"/uploads/{filename}"
         store = GalleryStore(**gallery.model_dump(), src=src)
         self.gallery_service.validate_gallery(store)
 
@@ -57,16 +58,29 @@ class GalleryUseCases:
         return self.gallery_repo.update(id=oid, update_data=update_data)
 
     def delete_gallery(self, current_user: UserOut, gallery_id: str):
+        if not current_user.approved:
+            raise AuthenticationFailedException(
+                "You cannot perform this action.")
         gallery_id = gallery_id.strip()
         try:
             oid = ObjectId(gallery_id)
         except Exception:
             raise ItemNotFoundException("Invalid gallery ID")
-        if not current_user.approved:
-            raise AuthenticationFailedException(
-                "You cannot perform this action.")
         existing_gallery = self.gallery_repo.read(
             oid)
         if not existing_gallery:
             raise ItemNotFoundException("Gallery not found.")
+        gallery = self.gallery_repo.read(oid)
+        self.gallery_service.delete_image(gallery["src"])
         return self.gallery_repo.delete(oid)
+
+    def read_gallery(self, gallery_id: str):
+        gallery_id = gallery_id.strip()
+        try:
+            oid = ObjectId(gallery_id)
+        except Exception:
+            raise ItemNotFoundException("Invalid gallery ID")
+        return self.gallery_repo.read(oid)
+
+    def read_all(self):
+        return self.gallery_repo.read_all()

@@ -17,7 +17,6 @@ class GalleryService:
         self.__check_filetype(picture)
         await self.__check_filesize(picture)
         await picture.seek(0)
-        
 
     def __check_filetype(self, file: UploadFile):
         extension = os.path.splitext(file.filename)[1].lower()
@@ -28,7 +27,7 @@ class GalleryService:
         total = 0
         while True:
             chunk = await file.read(setting.chunk_size)
-            if not chunk:  
+            if not chunk:
                 break
             total += len(chunk)
             if total > setting.max_file_size:
@@ -38,3 +37,6 @@ class GalleryService:
         if not gallery.src:
             raise MissingValueException(
                 "Missing required fields: src")
+
+    def delete_image(self, src: str):
+        os.remove(src)

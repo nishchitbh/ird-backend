@@ -1,12 +1,13 @@
-from fastapi import FastAPI, APIRouter, Request
 import logging
 import traceback
+from src.shared.config import setting
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI, APIRouter, Request
 from fastapi.middleware.cors import CORSMiddleware
-from src.auth.presentation.routes import auth_router, user_router
 from src.shared.domain.exceptions import AppException
 from src.gallery.presentation.routes import gallery_router
-from fastapi.staticfiles import StaticFiles
+from src.auth.presentation.routes import auth_router, user_router
 
 app = FastAPI()
 
@@ -34,8 +35,6 @@ logger = logging.getLogger(__name__)
 @app.exception_handler(Exception)
 async def generic_exception_handler(request: Request, exc: Exception):
     """Handles all unexpected exceptions."""
-
-    # Log the error with traceback for debugging
     logger.error(f"Unexpected error: {str(exc)}")
     logger.error(traceback.format_exc())
 
@@ -51,12 +50,12 @@ def read_root() -> dict:
     return {"message": "Hello World"}
 
 
+setting.upload_folder.mkdir(parents=True, exist_ok=True)
 app.mount(
     "/uploads",
-    StaticFiles(directory="static/uploads", html=False),
+    StaticFiles(directory=str(setting.upload_folder), html=False),
     name="uploads",
 )
-
 
 api_router = APIRouter(prefix="/api")
 

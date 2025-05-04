@@ -56,6 +56,9 @@ class ForbiddenException(AppException):
     def __init__(self, message: str = "Forbidden"):
         super().__init__(message, 403)  # 403 Forbidden
 
+class RequestEntityTooLargeException(AppException):
+    def __init__(self, message: str = "Request entity too large"):
+        super().__init__(message, 413)
 
 class MissingValueException(AppException):
     """Exception raised when a required field is missing."""

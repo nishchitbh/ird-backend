@@ -1,125 +1,66 @@
-from fastapi import Depends, status, HTTPException
-from fastapi.security.oauth2 import OAuth2PasswordRequestForm
-from src.auth.application.auth_use_cases import AuthUseCases
-from src.auth.presentation.config import auth_router, user_router, get_current_user, get_auth_use_cases
-from src.auth.domain.entities.users_entity import UserOut, UserRegister, UserUpdate, ChangePassword, UserUpdateAdmin
-from src.shared.domain.exceptions import AppException
+from src.areas_of_work.application.areas_of_work_use_cases import AreaUseCases
+from src.areas_of_work.presentation.config import get_areas_of_work_use_cases
+from src.areas_of_work.domain.entities import AreasOfWork, AreasOfWorkUpdate
+from src.areas_of_work.presentation.config import areas_router
+from src.auth.domain.entities.users_entity import UserOut
+from src.auth.presentation.config import get_current_user
+from fastapi import status, Depends
 
 
-@auth_router.post("/login", status_code=status.HTTP_200_OK)
-def login(
-    user_credentials: OAuth2PasswordRequestForm = Depends(),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
+@areas_router.get("/", response_model=list[AreasOfWork], status_code=status.HTTP_200_OK)
+def get_areas_of_work(
+        use_cases: AreaUseCases = Depends(get_areas_of_work_use_cases)
 ):
+    """ 
+    Gets all areas of work.
     """
-    Authenticates a user given their username and password.
-    """
-    try:
-        return auth_use_cases.login(user_credentials.username, user_credentials.password)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    return use_cases.get_all_areas()
 
 
-@auth_router.post("/signup", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-def signup(
-    user: UserRegister,
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
+@areas_router.get("/{area_id}", response_model=AreasOfWork, status_code=status.HTTP_200_OK)
+def get_one_area(
+        area_id: str,
+        use_cases: AreaUseCases = Depends(get_areas_of_work_use_cases)
 ):
+    """ 
+    Gets one area of work.
     """
-    Creates a new user.
-    """
-    try:
-        return auth_use_cases.signup(user)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    return use_cases.get_one_area(area_id)
 
 
-@user_router.get("/me", response_model=UserOut, status_code=status.HTTP_200_OK)
-def me(
-    current_user: UserOut = Depends(get_current_user)
+@areas_router.post("/", response_model=AreasOfWork, status_code=status.HTTP_201_CREATED)
+def create_area(
+        content: AreasOfWork,
+        current_user: UserOut = Depends(get_current_user),
+        use_cases: AreaUseCases = Depends(get_areas_of_work_use_cases)
 ):
+    """ 
+    Creates an area of work.
     """
-    Returns the current user's information.
-    """
-    try:
-        return current_user
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    return use_cases.create_area(content, current_user)
 
 
-@user_router.patch("/me", response_model=UserOut, status_code=status.HTTP_200_OK)
-def update_me(
-    update_data: UserUpdate,
-    current_user: UserOut = Depends(get_current_user),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
+@areas_router.patch("/{area_id}", status_code=status.HTTP_201_CREATED, response_model=AreasOfWork)
+def update_area(
+        area_id: str,
+        content: AreasOfWorkUpdate,
+        current_user: UserOut = Depends(get_current_user),
+        use_cases: AreaUseCases = Depends(get_areas_of_work_use_cases)
 ):
+    """ 
+    Updates an area of work.
     """
-    Updates the current user's information.
-    """
-    try:
-        return auth_use_cases.update_user(current_user, update_data)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    message = use_cases.update_area(area_id, content, current_user)
+    return message
 
 
-@user_router.patch("/me/password", response_model=UserOut, status_code=status.HTTP_200_OK)
-def change_password(
-    password_data: ChangePassword,
-    current_user: UserOut = Depends(get_current_user),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
+@areas_router.delete("/{area_id}", status_code=status.HTTP_200_OK)
+def delete_area(
+        area_id: str,
+        current_user: UserOut = Depends(get_current_user),
+        use_cases: AreaUseCases = Depends(get_areas_of_work_use_cases)
 ):
+    """ 
+    Deletes an area of work.
     """
-    Changes the current user's password.
-    """
-    try:
-        password = password_data.password
-        new_password = password_data.new_password
-        return auth_use_cases.change_password(current_user, password, new_password)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-
-@user_router.delete("/", status_code=status.HTTP_200_OK)
-def delete_user(
-    username: str,
-    current_user: UserOut = Depends(get_current_user),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
-):
-    """
-    Deletes a user.
-    """
-    try:
-        return auth_use_cases.delete_user(username, current_user)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-
-@user_router.post("/reset-password/", status_code=status.HTTP_200_OK)
-def reset_password(
-    username: str,
-    current_user: UserOut = Depends(get_current_user),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
-):
-    """
-    Resets a user's password.
-    """
-    try:
-        return auth_use_cases.reset_password(username, current_user)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-
-@user_router.patch("/update-user/", status_code=status.HTTP_200_OK)
-def update_other_user(
-    username: str,
-    update_data: UserUpdateAdmin,
-    current_user: UserOut = Depends(get_current_user),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
-):
-    """
-    Updates a user.
-    """
-    try:
-        return auth_use_cases.update_other_user(current_user, username, update_data)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    return use_cases.delete_area(area_id, current_user)

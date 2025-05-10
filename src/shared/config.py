@@ -3,6 +3,7 @@ import threading
 from pathlib import Path
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 
@@ -12,8 +13,10 @@ class Setting:
     auth_secret = os.getenv("AUTH_SECRET")
     access_token_expiry_time = int(os.getenv("ACCESS_TOKEN_EXPIRY_TIME"))
     algorithm = os.getenv("ALGORITHM")
-    rel_upload = os.getenv("UPLOAD_FOLDER", "static/uploads")
-    upload_folder: Path = (PROJECT_ROOT / rel_upload).resolve()
+    raw_upload = os.getenv("UPLOAD_FOLDER", "static/uploads").strip()
+    if raw_upload.startswith(os.sep):
+        raw_upload = raw_upload.lstrip(os.sep)
+    upload_folder: Path = (PROJECT_ROOT / raw_upload)
     allowed_extensions = os.getenv("ALLOWED_EXTENSIONS").split(",")
     chunk_size = int(os.getenv("CHUNK_SIZE", 1048576))
     max_file_size = int(os.getenv("MAX_FILE_SIZE", 10485760))

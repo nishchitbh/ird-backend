@@ -69,15 +69,7 @@ class UserService:
         self.user_repo = user_repo
 
     def validate_user(self, user: UserStore):
-        self.__check_missing_fields(user)
         self.__check_uniqueness(user)
-
-    def __check_missing_fields(self, user: UserStore):
-        missing_fields = [field for field in [
-            "username", "password"] if not getattr(user, field)]
-        if missing_fields:
-            raise ValueError(f"Missing fields: {', '.join(missing_fields)}")
-
     def __check_uniqueness(self, user: UserStore):
         existing_user = self.user_repo.read(user.username)
         if existing_user:

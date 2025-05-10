@@ -1,6 +1,7 @@
 from pymongo.database import Database
 from pymongo.errors import ConnectionFailure, OperationFailure, WriteError, InvalidOperation
 from src.shared.domain.repositories.data_repo import IDataRepo
+from src.shared.domain.exceptions import AppException, ItemNotFoundException
 from fastapi import HTTPException
 
 
@@ -23,6 +24,8 @@ class MongoRepo(IDataRepo):
         elif isinstance(exception, InvalidOperation):
             raise HTTPException(
                 status_code=400, detail=f"Invalid operation: {exception.details}")
+        elif isinstance(exception, AppException):
+            raise exception
         else:
             raise HTTPException(status_code=500, detail=str(exception))
 
@@ -37,6 +40,8 @@ class MongoRepo(IDataRepo):
     def read(self, identifier: dict) -> dict:
         try:
             result = self.db[self.collection].find_one(identifier)
+            if not result:
+                raise ItemNotFoundException
             return result
         except Exception as e:
             self.handle_error(e)
@@ -46,7 +51,7 @@ class MongoRepo(IDataRepo):
             result = self.db[self.collection].find_one_and_update(
                 identifier,
                 {"$set": update_data},
-                return_document=True  # Ensures the updated document is returned
+                return_document=True 
             )
             return result
 
@@ -62,10 +67,7 @@ class MongoRepo(IDataRepo):
                     "message": f"Data with identifier {identifier} deleted from collection {self.collection}."
                 }
             else:
-                return {
-                    "status": "failure",
-                    "message": f"Data with identifier {identifier} not found on collection {self.collection}."
-                }
+                return None
         except Exception as e:
             self.handle_error(e)
 

@@ -80,7 +80,10 @@ class GalleryUseCases:
             oid = ObjectId(gallery_id)
         except Exception:
             raise ItemNotFoundException("Invalid gallery ID")
-        return self.gallery_repo.read(oid)
+        gallery = self.gallery_repo.read(oid)
+        if not gallery:
+            raise ItemNotFoundException("Gallery not found.")
+        return gallery
 
     def read_all(self):
         return self.gallery_repo.read_all()

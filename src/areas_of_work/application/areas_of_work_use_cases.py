@@ -8,7 +8,7 @@ from src.auth.domain.entities.users_entity import UserOut
 class AreaUseCases:
     def __init__(self, area_repo: IAreaRepo, area_services: AreaServices):
         self.area_repo = area_repo
-        self.area_services = AreaServices(area_repo=area_repo)
+        self.area_services = area_services
 
     def create_area(self, content: AreasOfWork, current_user: UserOut) -> AreasOfWork:
         if not current_user.approved:

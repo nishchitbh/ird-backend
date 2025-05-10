@@ -8,9 +8,9 @@ from fastapi import FastAPI, APIRouter, Request
 from fastapi.middleware.cors import CORSMiddleware
 from src.shared.domain.exceptions import AppException
 from src.gallery.presentation.routes import gallery_router
+from src.join_us.presentation.routes import join_us_router
 from src.areas_of_work.presentation.routes import areas_router
 from src.auth.presentation.routes import auth_router, user_router
-
 ENV = os.getenv("ENV", 'prod').lower()
 IS_PROD = ENV == "prod"
 
@@ -73,4 +73,6 @@ api_router.include_router(auth_router)
 api_router.include_router(user_router)
 api_router.include_router(gallery_router)
 api_router.include_router(areas_router)
+api_router.include_router(join_us_router)
+
 app.include_router(api_router)

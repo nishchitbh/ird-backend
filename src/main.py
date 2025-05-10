@@ -11,7 +11,7 @@ from src.gallery.presentation.routes import gallery_router
 from src.areas_of_work.presentation.routes import areas_router
 from src.auth.presentation.routes import auth_router, user_router
 
-ENV = os.getenv("ENV").lower()
+ENV = os.getenv("ENV", 'prod').lower()
 IS_PROD = ENV == "prod"
 
 app = FastAPI(

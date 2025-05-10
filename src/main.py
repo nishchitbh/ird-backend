@@ -1,3 +1,4 @@
+import os
 import logging
 import traceback
 from src.shared.config import setting
@@ -10,7 +11,15 @@ from src.gallery.presentation.routes import gallery_router
 from src.areas_of_work.presentation.routes import areas_router
 from src.auth.presentation.routes import auth_router, user_router
 
-app = FastAPI()
+ENV = os.getenv("ENV").lower()
+IS_PROD = ENV == "prod"
+
+app = FastAPI(
+    title="IRD Website Backend",
+    docs_url=None if IS_PROD else "/docs",
+    redoc_url=None if IS_PROD else "/redoc",
+    openapi_url=None if IS_PROD else "/openapi.json",
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -65,4 +74,3 @@ api_router.include_router(user_router)
 api_router.include_router(gallery_router)
 api_router.include_router(areas_router)
 app.include_router(api_router)
-

@@ -30,7 +30,6 @@ class GalleryUseCases:
         extension = os.path.splitext(file.filename)[1].lower()
         filename = f"{uuid.uuid4()}{extension}"
         target: Path = safe_join(setting.upload_folder, filename)
-        target.parent.mkdir(parents=True, exist_ok=True)
         contents = await file.read()
         async with aiofiles.open(target, "wb") as out_file:
             await out_file.write(contents)

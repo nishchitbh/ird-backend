@@ -10,6 +10,7 @@ from src.shared.domain.exceptions import AppException
 from src.gallery.presentation.routes import gallery_router
 from src.join_us.presentation.routes import join_us_router
 from src.areas_of_work.presentation.routes import areas_router
+from src.event_list.presentation.routes import event_list_router
 from src.auth.presentation.routes import auth_router, user_router
 from src.flagship_programs.presentation.routes import flagship_programs_router
 
@@ -77,5 +78,6 @@ api_router.include_router(gallery_router)
 api_router.include_router(areas_router)
 api_router.include_router(join_us_router)
 api_router.include_router(flagship_programs_router)
+api_router.include_router(event_list_router)
 
 app.include_router(api_router)

@@ -15,9 +15,18 @@ class AreasOfWork(BaseModel):
     initiativeLists: List[InitiativeList]
     published: bool = False
 
+
 class AreasOfWorkUpdate(BaseModel):
     initiativeName: Optional[str] = None
     initiativeDesc: Optional[str] = None
     initiativeImage: Optional[str] = None
     initiativeLists: Optional[List[InitiativeList]] = None
     published: Optional[bool] = None
+
+
+class AreasOfWorkResponse(BaseModel):
+    data: AreasOfWork
+
+
+class AreasListResponse(BaseModel):
+    data: List[AreasOfWork]

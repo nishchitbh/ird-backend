@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 
 class JoinUsProgram(BaseModel):
@@ -14,3 +14,10 @@ class JoinUsUpdate(BaseModel):
     programDesc: Optional[str] = None
     programImage: Optional[str] = None
     programLink: Optional[str] = None
+
+
+class JoinUsProgramResponse(BaseModel):
+    data: JoinUsProgram
+
+class JoinListResponse(BaseModel):
+    data: List[JoinUsProgram]

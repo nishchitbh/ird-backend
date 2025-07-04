@@ -12,8 +12,7 @@ class GalleryRepoImpl(IGalleryRepo):
         return message
 
     def update(self, id: ObjectId, update_data: dict) -> dict:
-        message = self.repo.update(
-            {"_id": id}, update_data)
+        message = self.repo.update({"_id": id}, update_data)
         return message
 
     def read(self, id: ObjectId) -> dict:

@@ -19,5 +19,6 @@ class JoinUsUpdate(BaseModel):
 class JoinUsProgramResponse(BaseModel):
     data: JoinUsProgram
 
+
 class JoinListResponse(BaseModel):
     data: List[JoinUsProgram]

@@ -26,9 +26,7 @@ class GalleryOut(GalleryBase):
 
 class GalleryList(BaseModel):
     data: List[GalleryOut]
-    model_config = {
-        "populate_by_name": True
-    }
+    model_config = {"populate_by_name": True}
 
 
 class GalleryStore(GalleryBase):
@@ -36,9 +34,10 @@ class GalleryStore(GalleryBase):
 
 
 class GalleryUpdate(BaseModel):
-    src:     Optional[str] = None
-    alt:     Optional[str] = None
+    src: Optional[str] = None
+    alt: Optional[str] = None
     caption: Optional[str] = None
+
 
 class GalleryUpload(GalleryBase):
     pass

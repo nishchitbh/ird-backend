@@ -13,4 +13,7 @@ def get_event_list_cases():
     repo = MongoRepo(db=db, collection="flagship_programs")
     flagship_programs_repo = EventListRepo(repo=repo)
     flagship_services = EventListService(repo=flagship_programs_repo)
-    return EventListUseCases(flagship_programs_repo=flagship_programs_repo, flagship_services=flagship_services)
+    return EventListUseCases(
+        flagship_programs_repo=flagship_programs_repo,
+        flagship_services=flagship_services,
+    )

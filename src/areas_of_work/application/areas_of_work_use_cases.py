@@ -16,7 +16,9 @@ class AreaUseCases:
         self.area_services.verify_creation(content)
         return self.area_repo.create(content.model_dump())
 
-    def update_area(self, area_id: str, content: AreasOfWorkUpdate, current_user: UserOut) -> AreasOfWork:
+    def update_area(
+        self, area_id: str, content: AreasOfWorkUpdate, current_user: UserOut
+    ) -> AreasOfWork:
         if not current_user.approved:
             raise UnauthorizedException("You cannot perform this action.")
         update_data = content.model_dump()

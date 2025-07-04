@@ -10,13 +10,17 @@ class JoinUsUseCases:
         self.repo = join_us_repo
         self.services = join_services
 
-    def create_join_us(self, content: JoinUsProgram, current_user: UserOut) -> JoinUsProgram:
+    def create_join_us(
+        self, content: JoinUsProgram, current_user: UserOut
+    ) -> JoinUsProgram:
         if not current_user.approved:
             raise UnauthorizedException("You cannot perform this action.")
         self.services.verify_creation(content)
         return self.repo.create(content.model_dump())
 
-    def update_join_us(self, id: str, content: JoinUsUpdate, current_user: UserOut) -> JoinUsProgram:
+    def update_join_us(
+        self, id: str, content: JoinUsUpdate, current_user: UserOut
+    ) -> JoinUsProgram:
         if not current_user.approved:
             raise UnauthorizedException("You cannot perform this action.")
         update_data = content.model_dump()

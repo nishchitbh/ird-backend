@@ -6,17 +6,23 @@ from src.flagship_programs.domain.services import FlagshipService
 
 
 class FlagshipUseCases:
-    def __init__(self, flagship_programs_repo: IFlagshipRepo, flagship_services: FlagshipService):
+    def __init__(
+        self, flagship_programs_repo: IFlagshipRepo, flagship_services: FlagshipService
+    ):
         self.repo = flagship_programs_repo
         self.services = flagship_services
 
-    def create_flagship_programs(self, content: FlagshipProgram, current_user: UserOut) -> FlagshipProgram:
+    def create_flagship_programs(
+        self, content: FlagshipProgram, current_user: UserOut
+    ) -> FlagshipProgram:
         if not current_user.approved:
             raise UnauthorizedException("You cannot perform this action.")
         self.services.verify_creation(content)
         return self.repo.create(content.model_dump())
 
-    def update_flagship_programs(self, id: str, content: FlagshipProgramUpdate, current_user: UserOut) -> FlagshipProgram:
+    def update_flagship_programs(
+        self, id: str, content: FlagshipProgramUpdate, current_user: UserOut
+    ) -> FlagshipProgram:
         if not current_user.approved:
             raise UnauthorizedException("You cannot perform this action.")
         update_data = content.model_dump()

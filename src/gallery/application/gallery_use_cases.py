@@ -1,10 +1,15 @@
-from src.gallery.domain.entities import GalleryUpdate, GalleryUpload, GalleryStore, GalleryOut
-from src.auth.domain.entities.users_entity import UserOut
+from src.gallery.domain.entities import (
+    GalleryUpdate,
+    GalleryUpload,
+    GalleryStore,
+    GalleryOut,
+)
+from src.auth.domain.entities import UserOut
 from src.gallery.domain.repositories import IGalleryRepo
 from src.gallery.domain.services import GalleryService
 from src.shared.domain.exceptions import (
     AuthenticationFailedException,
-    ItemNotFoundException
+    NotFoundException,
 )
 from src.shared.utils import safe_join
 from src.shared.config import setting
@@ -21,10 +26,11 @@ class GalleryUseCases:
         self.gallery_repo = gallery_repo
         self.gallery_service = gallery_service
 
-    async def create_gallery(self, file: UploadFile, current_user: UserOut, gallery: GalleryUpload):
+    async def create_gallery(
+        self, file: UploadFile, current_user: UserOut, gallery: GalleryUpload
+    ):
         if not current_user.approved:
-            raise AuthenticationFailedException(
-                "You cannot perform this action.")
+            raise AuthenticationFailedException("You cannot perform this action.")
 
         await self.gallery_service.validate_picture(file)
         extension = os.path.splitext(file.filename)[1].lower()
@@ -40,35 +46,34 @@ class GalleryUseCases:
         record = self.gallery_repo.create(store.model_dump())
         return GalleryOut.model_validate(record)
 
-    def update_gallery(self, current_user: UserOut, gallery_id: str, gallery: GalleryUpdate):
+    def update_gallery(
+        self, current_user: UserOut, gallery_id: str, gallery: GalleryUpdate
+    ):
         if not current_user.approved:
-            raise AuthenticationFailedException(
-                "You cannot perform this action.")
+            raise AuthenticationFailedException("You cannot perform this action.")
         gallery_id = gallery_id.strip()
         try:
             oid = ObjectId(gallery_id)
         except Exception:
-            raise ItemNotFoundException("Invalid gallery ID")
+            raise NotFoundException("Invalid gallery ID")
         existing_gallery = self.gallery_repo.read(oid)
         if not existing_gallery:
-            raise ItemNotFoundException("Gallery not found.")
+            raise NotFoundException("Gallery not found.")
         update_data = gallery.model_dump()
         update_data = {k: v for k, v in update_data.items() if v is not None}
         return self.gallery_repo.update(id=oid, update_data=update_data)
 
     def delete_gallery(self, current_user: UserOut, gallery_id: str):
         if not current_user.approved:
-            raise AuthenticationFailedException(
-                "You cannot perform this action.")
+            raise AuthenticationFailedException("You cannot perform this action.")
         gallery_id = gallery_id.strip()
         try:
             oid = ObjectId(gallery_id)
         except Exception:
-            raise ItemNotFoundException("Invalid gallery ID")
-        existing_gallery = self.gallery_repo.read(
-            oid)
+            raise NotFoundException("Invalid gallery ID")
+        existing_gallery = self.gallery_repo.read(oid)
         if not existing_gallery:
-            raise ItemNotFoundException("Gallery not found.")
+            raise NotFoundException("Gallery not found.")
         gallery = self.gallery_repo.read(oid)
         self.gallery_service.delete_image(gallery["src"])
         return self.gallery_repo.delete(oid)
@@ -78,10 +83,10 @@ class GalleryUseCases:
         try:
             oid = ObjectId(gallery_id)
         except Exception:
-            raise ItemNotFoundException("Invalid gallery ID")
+            raise NotFoundException("Invalid gallery ID")
         gallery = self.gallery_repo.read(oid)
         if not gallery:
-            raise ItemNotFoundException("Gallery not found.")
+            raise NotFoundException("Gallery not found.")
         return gallery
 
     def read_all(self):

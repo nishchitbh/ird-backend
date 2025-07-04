@@ -3,7 +3,11 @@ from fastapi import UploadFile
 from src.shared.config import setting
 from src.gallery.domain.entities import GalleryStore
 from src.gallery.domain.repositories import IGalleryRepo
-from src.shared.domain.exceptions import MissingValueException, ForbiddenException, RequestEntityTooLargeException
+from src.shared.domain.exceptions import (
+    MissingValueException,
+    ForbiddenException,
+    RequestEntityTooLargeException,
+)
 
 
 class GalleryService:
@@ -35,8 +39,7 @@ class GalleryService:
 
     def __check_missing_fields(self, gallery: GalleryStore):
         if not gallery.src:
-            raise MissingValueException(
-                "Missing required fields: src")
+            raise MissingValueException("Missing required fields: src")
 
     def delete_image(self, src: str):
         os.remove(src)

@@ -5,7 +5,9 @@ from src.flagship_programs.domain.services import FlagshipService
 from src.shared.infrastructure.db_config import get_db
 from fastapi import APIRouter
 
-flagship_programs_router = APIRouter(prefix="/flagship-programs", tags=["Flagship Programs"])
+flagship_programs_router = APIRouter(
+    prefix="/flagship-programs", tags=["Flagship Programs"]
+)
 
 
 def get_flagship_programse_cases():
@@ -13,4 +15,7 @@ def get_flagship_programse_cases():
     repo = MongoRepo(db=db, collection="flagship_programs")
     flagship_programs_repo = FlagshipRepo(repo=repo)
     flagship_services = FlagshipService(repo=flagship_programs_repo)
-    return FlagshipUseCases(flagship_programs_repo=flagship_programs_repo, flagship_services=flagship_services)
+    return FlagshipUseCases(
+        flagship_programs_repo=flagship_programs_repo,
+        flagship_services=flagship_services,
+    )

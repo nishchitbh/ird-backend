@@ -1,152 +1,293 @@
-from fastapi import Depends, status, HTTPException
-from fastapi.security.oauth2 import OAuth2PasswordRequestForm
-from src.auth.application.auth_use_cases import AuthUseCases
-from src.auth.presentation.config import auth_router, user_router, get_current_user, get_auth_use_cases
-from src.auth.domain.entities.users_entity import UserOut, UserRegister, UserUpdate, ChangePassword, UserUpdateAdmin
-from src.shared.domain.exceptions import AppException
+from fastapi import Depends, status
+from fastapi.responses import StreamingResponse
+
+from src.auth.application.abstract_auth_flow import IAuthUseCases
+from src.auth.presentation.config import (
+    auth_router,
+    user_router,
+    get_current_user,
+    get_auth_use_cases,
+)
+from src.auth.domain.entities import (
+    UserOut,
+    UsersOut,
+    CompanyEmail,
+    UserLogin,
+    UserCreate,
+    UserUpdate,
+    AddPassword,
+    LoginResponse,
+)
 
 
-@auth_router.post("/login", status_code=status.HTTP_200_OK)
-def login(
-    user_credentials: OAuth2PasswordRequestForm = Depends(),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
-):
-    """
-    Authenticates a user given their username and password.
-    """
-    try:
-        return auth_use_cases.login(user_credentials.username, user_credentials.password)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+class AuthRoutes:
+    def __init__(self):
+        self.router = auth_router
+        self.router.add_api_route(
+            path="/login",
+            endpoint=self.login,
+            methods=["POST"],
+            status_code=status.HTTP_200_OK,
+            response_model=LoginResponse,
+        )
+        self.router.add_api_route(
+            path="/register",
+            endpoint=self.register,
+            methods=["POST"],
+            status_code=status.HTTP_201_CREATED,
+            response_class=StreamingResponse,
+            responses={
+                201: {
+                    "content": {"text/csv": {}},
+                    "description": "A CSV file with Email and generated Password columns",
+                }
+            },
+        )
+        self.router.add_api_route(
+            path="/change-password",
+            endpoint=self.change_password,
+            methods=["PATCH"],
+            status_code=status.HTTP_200_OK,
+            response_model=UserOut,
+        )
+        self.router.add_api_route(
+            path="/reset-password",
+            endpoint=self.reset_password,
+            methods=["PATCH"],
+            response_class=StreamingResponse,
+            status_code=status.HTTP_200_OK,
+            responses={
+                200: {
+                    "content": {"text/csv": {}},
+                    "description": "A CSV file with Email and generated Password columns",
+                }
+            },
+        )
+
+    def login(
+        self,
+        user_login: UserLogin,
+        auth_use_cases: IAuthUseCases = Depends(get_auth_use_cases),
+    ):
+        """
+        **Log in a user.**\n
+        **:param** user_login: UserLogin object containing:\n
+        * email : CompanyEmail\n
+        * password: str\n
+        **:return:** UserOut object with access_token, token_type and must_change_password
+        """
+        return auth_use_cases.login_user(user_login)
+
+    def register(
+        self,
+        user_create: UserCreate,
+        auth_use_cases: IAuthUseCases = Depends(get_auth_use_cases),
+        current_user: UserOut = get_current_user("super", "admin"),
+    ):
+        """
+        **Register a new user by Super Admin.**\n
+        **:param** UserCreate: UserCreate object containing:\n
+        * full_name : str\n
+        * email: CompanyEmail\n
+        * roles: List[Role]\n
+        **:return:** CSV with email and password
+        """
+        return auth_use_cases.register_user(user_create)
+
+    def change_password(
+        self,
+        add_password: AddPassword,
+        current_user: UserOut = get_current_user("user"),
+        auth_use_cases: IAuthUseCases = Depends(get_auth_use_cases),
+    ):
+        """
+        **Change the user's password.**\n
+        **:param** add_password: AddPassword object containing:\n
+        * current_password: str\n
+        * new_password: str\n
+        * confirm_new_password: str\n
+        **:return:** UserOut object with user's info.
+        """
+        return auth_use_cases.change_password(
+            email=current_user.email, add_password=add_password
+        )
+
+    def reset_password(
+        self,
+        email: str,
+        current_user: UserOut = get_current_user("super"),
+        auth_use_cases: IAuthUseCases = Depends(get_auth_use_cases),
+    ):
+        """
+        **Reset the user's password.**\n
+        **:param** email: CompanyEmail\n
+        **:return:** CSV file with user's email and password.
+        """
+        return auth_use_cases.reset_password(email)
 
 
-@auth_router.post("/signup", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-def signup(
-    user: UserRegister,
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
-):
-    """
-    Creates a new user.
-    """
-    try:
-        return auth_use_cases.signup(user)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+class UserRoutes:
+    def __init__(self):
+        self.router = user_router
+        self.router.add_api_route(
+            path="/me",
+            endpoint=self.get_me,
+            methods=["GET"],
+            response_model=UserOut,
+            status_code=status.HTTP_200_OK,
+        )
+        self.router.add_api_route(
+            path="/update-me",
+            endpoint=self.self_update_user,
+            methods=["PATCH"],
+            response_model=UserOut,
+            status_code=status.HTTP_200_OK,
+        )
+        self.router.add_api_route(
+            path="/users",
+            endpoint=self.get_all_users,
+            methods=["GET"],
+            status_code=status.HTTP_200_OK,
+            response_model=UsersOut,
+        )
+        self.router.add_api_route(
+            path="/users/",
+            endpoint=self.get_user_by_id,
+            methods=["GET"],
+            status_code=status.HTTP_200_OK,
+            response_model=UserOut,
+        )
+        self.router.add_api_route(
+            path="/hard-delete/",
+            endpoint=self.delete_user,
+            methods=["DELETE"],
+            status_code=status.HTTP_200_OK,
+            response_model=str,
+            responses={
+                200: {
+                    "description": "User has been deleted",
+                }
+            },
+        )
+        self.router.add_api_route(
+            path="/delete",
+            endpoint=self.soft_delete,
+            methods=["DELETE"],
+            status_code=status.HTTP_200_OK,
+            response_model=str,
+            responses={
+                200: {
+                    "description": "User has been deleted",
+                }
+            },
+        )
+        self.router.add_api_route(
+            path="/update/",
+            endpoint=self.update_user,
+            methods=["PATCH"],
+            status_code=status.HTTP_200_OK,
+            response_model=UserOut,
+        )
+        self.router.add_api_route(
+            path="/reactivate-user/",
+            endpoint=self.reactivate_user,
+            methods=["PATCH"],
+            status_code=status.HTTP_200_OK,
+            response_model=UserOut,
+        )
 
-
-@user_router.get("/me", response_model=UserOut, status_code=status.HTTP_200_OK)
-def me(
-    current_user: UserOut = Depends(get_current_user)
-):
-    """
-    Returns the current user's information.
-    """
-    try:
+    def get_me(self, current_user: UserOut = get_current_user("user")):
+        """
+        **Get the current user.**\n
+        **:return:** UserOut object
+        """
         return current_user
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+    def self_update_user(
+        self,
+        user_update: UserUpdate,
+        current_user: UserOut = get_current_user("user"),
+        auth_use_cases: IAuthUseCases = Depends(get_auth_use_cases),
+    ):
+        """
+        **Update the current user.**\n
+        **:return:** UserOut object
+        """
+        return auth_use_cases.update_user(
+            user_update=user_update, email=current_user.email
+        )
 
-@user_router.patch("/me", response_model=UserOut, status_code=status.HTTP_200_OK)
-def update_me(
-    update_data: UserUpdate,
-    current_user: UserOut = Depends(get_current_user),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
-):
-    """
-    Updates the current user's information.
-    """
-    try:
-        return auth_use_cases.update_user(current_user, update_data)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    def update_user(
+        self,
+        email: CompanyEmail,
+        user_update: UserUpdate,
+        current_user: UserOut = get_current_user("super", "admin"),
+        auth_use_cases: IAuthUseCases = Depends(get_auth_use_cases),
+    ):
+        """
+        **Update a user by email.**\n
+        **:param** email: CompanyEmail\n
+        **:param** user_update: SelfUpdate object containing:\n
+        **:return:** UserOut object
+        """
+        return auth_use_cases.update_user(user_update=user_update, email=email)
 
+    def get_all_users(
+        self,
+        page:int = 1,
+        limit:int = 10,
+        current_user: UserOut = get_current_user("super", "admin"),
+        auth_use_cases: IAuthUseCases = Depends(get_auth_use_cases),
+    ):
+        """
+        **Get all users.**\n
+        **:return:** list[UserOut] object
+        """
+        return auth_use_cases.get_all_users(page=page, limit=limit)
 
-@user_router.patch("/me/password", response_model=UserOut, status_code=status.HTTP_200_OK)
-def change_password(
-    password_data: ChangePassword,
-    current_user: UserOut = Depends(get_current_user),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
-):
-    """
-    Changes the current user's password.
-    """
-    try:
-        password = password_data.password
-        new_password = password_data.new_password
-        return auth_use_cases.change_password(current_user, password, new_password)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    def get_user_by_id(
+        self,
+        email: str,
+        current_user: UserOut = get_current_user("super", "admin"),
+        auth_use_cases: IAuthUseCases = Depends(get_auth_use_cases),
+    ):
+        """
+        **Get a user by email.**\n
+        **:return:** UserOut object
+        """
+        return auth_use_cases.get_user(email)
 
+    def soft_delete(
+        self,
+        current_user: UserOut = get_current_user("user"),
+        auth_use_cases: IAuthUseCases = Depends(get_auth_use_cases),
+    ):
+        """
+        **Soft delete a user by email.**\n
+        **:return:** UserOut object
+        """
+        return auth_use_cases.soft_delete_user(email=current_user.email)
 
-@user_router.delete("/", status_code=status.HTTP_200_OK)
-def delete_user(
-    username: str,
-    current_user: UserOut = Depends(get_current_user),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
-):
-    """
-    Deletes a user.
-    """
-    try:
-        return auth_use_cases.delete_user(username, current_user)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    def delete_user(
+        self,
+        email: CompanyEmail,
+        current_user: UserOut = get_current_user("super", "admin"),
+        auth_use_cases: IAuthUseCases = Depends(get_auth_use_cases),
+    ):
+        """
+        **Hard delete a user by email.**\n
+        **:return:** UserOut object
+        """
+        return auth_use_cases.delete_user(email)
 
-
-@user_router.post("/reset-password", status_code=status.HTTP_200_OK)
-def reset_password(
-    username: str,
-    current_user: UserOut = Depends(get_current_user),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
-):
-    """
-    Resets a user's password.
-    """
-    try:
-        return auth_use_cases.reset_password(username, current_user)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-
-@user_router.patch("/update-user", status_code=status.HTTP_200_OK)
-def update_other_user(
-    username: str,
-    update_data: UserUpdateAdmin,
-    current_user: UserOut = Depends(get_current_user),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
-):
-    """
-    Updates a user.
-    """
-    try:
-        return auth_use_cases.update_other_user(current_user, username, update_data)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-@user_router.post("/user", response_model=UserOut, status_code=status.HTTP_200_OK)
-def get_one_user(
-    username: str,
-    current_user: UserOut = Depends(get_current_user),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
-):
-    """
-    Gets a user.
-    """
-    try:
-        return auth_use_cases.get_one_user(current_user, username)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-@user_router.get("/users", response_model=list[UserOut], status_code=status.HTTP_200_OK)
-def get_all_users(
-    current_user: UserOut = Depends(get_current_user),
-    auth_use_cases: AuthUseCases = Depends(get_auth_use_cases)
-):
-    """
-    Gets all users.
-    """
-    try:
-        return auth_use_cases.get_all_users(current_user)
-    except AppException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    def reactivate_user(
+        self,
+        email: CompanyEmail,
+        current_user: UserOut = get_current_user("super", "admin"),
+        auth_use_cases: IAuthUseCases = Depends(get_auth_use_cases),
+    ):
+        """
+        **Reactivate a user by email.**\n
+        **:return:** UserOut object
+        """
+        return auth_use_cases.reactivate_user(email)

@@ -12,7 +12,7 @@ COPY pyproject.toml .
 RUN pip install --upgrade pip && pip install --no-cache-dir .
 
 # Copy the app source code
-COPY ./app ./app
+COPY . .
 
 # Expose port and run the app
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

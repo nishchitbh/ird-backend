@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+    container_name: ird_backend_app
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo:7.0
+    container_name: mongo
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: redis:7.2
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+volumes:
+  mongo_data:
+

@@ -10,6 +10,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build docker images
-        run: docker build -t backend:dev --target=runner .
+        run: docker build -t backend:dev .
       - name: Deploy
         run: /home/ubuntu/dev_app/deploy-api.sh

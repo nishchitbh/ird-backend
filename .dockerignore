@@ -1,0 +1,18 @@
+# ignore virtual environments
+.venv
+__pycache__
+*.pyc
+
+# git metadata
+.git
+.gitignore
+
+# uv cache (optional)
+/root/.cache/uv
+
+# local environment files
+.env
+
+# editor temp files
+*.swp
+.DS_Store

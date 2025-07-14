@@ -9,8 +9,15 @@ load_dotenv()
 
 class Setting:
     PROJECT_ROOT = Path(__file__).resolve().parent.parent
-    mongodb_host = os.getenv("MONGODB_host")
-    database_name = os.getenv("DATABASE_NAME")
+    mongodb_host = os.getenv("MONGODB_HOST")
+    mongodb_port = os.getenv("MONGODB_PORT")
+    mongodb_username = os.getenv("MONGO_INITDB_ROOT_USERNAME")
+    mongodb_password = os.getenv("MONGO_INITDB_ROOT_PASSWORD")
+    database_name = os.getenv("MONGO_INITDB_DATABASE")
+    if mongodb_username and mongodb_password:
+        mongodb_connection = f"mongodb://{mongodb_username}:{mongodb_password}@{mongodb_host}:{mongodb_port}/{database_name}?authSource=admin"
+    else:
+        mongodb_connection = f"mongodb://{mongodb_host}:{mongodb_port}/{database_name}"
     auth_secret = os.getenv("AUTH_SECRET")
     access_token_expiry_time = int(os.getenv("ACCESS_TOKEN_EXPIRY_TIME"))
     algorithm = os.getenv("ALGORITHM")

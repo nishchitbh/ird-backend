@@ -82,7 +82,7 @@ class AuthRoutes:
         self,
         user_create: UserCreate,
         auth_use_cases: IAuthUseCases = Depends(get_auth_use_cases),
-        current_user: UserOut = get_current_user("super", "admin"),
+        # current_user: UserOut = get_current_user("super", "admin"),
     ):
         """
         **Register a new user by Super Admin.**\n

@@ -2,6 +2,7 @@ from fastapi.responses import JSONResponse
 from fastapi import Request, status
 from redis.asyncio import Redis
 from dotenv import load_dotenv
+from src.shared.config import setting
 import time
 import os
 
@@ -11,7 +12,13 @@ REDIS_URL = os.getenv("REDIS_URL")
 CALLS = int(os.getenv("RATE_LIMIT_CALLS", 5))
 PERIOD = int(os.getenv("RATE_LIMIT_PERIOD", 60))
 
-redis = Redis.from_url(REDIS_URL, encoding="utf-8", decode_responses=True)
+redis = Redis(
+    host=setting.redis_host,
+    port=setting.redis_port,
+    decode_responses=True,
+    username=setting.redis_usernamee,
+    password=setting.redis_password,
+)
 
 
 async def rate_limit_middleware(request: Request, call_next):

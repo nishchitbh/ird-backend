@@ -7,7 +7,7 @@ from src.flagship_programs.domain.entities import (
 from src.flagship_programs.application.flagship_use_cases import FlagshipUseCases
 from src.flagship_programs.presentation.config import flagship_programs_router
 from src.flagship_programs.presentation.config import get_flagship_programse_cases
-from src.auth.domain.entities.users_entity import UserOut
+from src.auth.domain.entities import UserOut
 from src.auth.presentation.config import get_current_user
 from fastapi import status, Depends
 

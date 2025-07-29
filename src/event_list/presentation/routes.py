@@ -1,7 +1,7 @@
 from src.event_list.presentation.config import event_list_router, get_event_list_cases
 from src.event_list.domain.entities import EventList, EventListUpdate, EventLists
 from src.event_list.application.event_use_cases import EventListUseCases
-from src.auth.domain.entities.users_entity import UserOut
+from src.auth.domain.entities import UserOut
 from src.auth.presentation.config import get_current_user
 from fastapi import status, Depends
 

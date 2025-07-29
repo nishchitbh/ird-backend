@@ -2,7 +2,7 @@ from src.areas_of_work.domain.entities import AreasOfWork, AreasOfWorkUpdate
 from src.areas_of_work.domain.repositories import IAreaRepo
 from src.shared.domain.exceptions import UnauthorizedException
 from src.areas_of_work.domain.services import AreaServices
-from src.auth.domain.entities.users_entity import UserOut
+from src.auth.domain.entities import UserOut
 
 
 class AreaUseCases:

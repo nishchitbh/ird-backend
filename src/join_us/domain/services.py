@@ -1,4 +1,4 @@
-from src.join_us.domain.entities import JoinUsProgram, JoinUsUpdate
+from src.join_us.domain.entities import JoinUsProgram
 from src.join_us.domain.repositories import IJoinUsRepo
 
 

@@ -1,6 +1,6 @@
 from src.join_us.domain.entities import JoinUsProgram, JoinUsUpdate
 from src.shared.domain.exceptions import UnauthorizedException
-from src.auth.domain.entities.users_entity import UserOut
+from src.auth.domain.entities import UserOut
 from src.join_us.domain.repositories import IJoinUsRepo
 from src.join_us.domain.services import JoinUsServices
 

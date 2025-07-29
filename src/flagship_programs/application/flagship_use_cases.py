@@ -1,6 +1,6 @@
 from src.flagship_programs.domain.entities import FlagshipProgram, FlagshipProgramUpdate
 from src.shared.domain.exceptions import UnauthorizedException
-from src.auth.domain.entities.users_entity import UserOut
+from src.auth.domain.entities import UserOut
 from src.flagship_programs.domain.repositories import IFlagshipRepo
 from src.flagship_programs.domain.services import FlagshipService
 

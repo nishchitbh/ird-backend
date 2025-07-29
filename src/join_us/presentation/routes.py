@@ -7,7 +7,7 @@ from src.join_us.domain.entities import (
 from src.join_us.application.join_us_use_cases import JoinUsUseCases
 from src.join_us.presentation.config import get_join_use_cases
 from src.join_us.presentation.config import join_us_router
-from src.auth.domain.entities.users_entity import UserOut
+from src.auth.domain.entities import UserOut
 from src.auth.presentation.config import get_current_user
 from fastapi import status, Depends
 

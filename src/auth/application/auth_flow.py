@@ -23,7 +23,7 @@ from src.auth.domain.entities import (
     LastLoginUpdate,
     FullUpdate,
     LoginResponse,
-    Pagination
+    Pagination,
 )
 
 
@@ -33,7 +33,7 @@ class AuthUseCases(IAuthUseCases):
         user_repo: IUserRepository,
         auth_service: AuthService,
         user_service: UserService,
-        shared_service: SharedServices
+        shared_service: SharedServices,
     ):
         self.user_repo = user_repo
         self.auth_service = auth_service
@@ -134,7 +134,10 @@ class AuthUseCases(IAuthUseCases):
         Returns:
             list[UserOut]: list of all users
         """
-        all_users = [UserOut(**user.model_dump()) for user in self.user_repo.get_all(page=page, limit=limit)]
+        all_users = [
+            UserOut(**user.model_dump())
+            for user in self.user_repo.get_all(page=page, limit=limit)
+        ]
         pagination = Pagination(page=page, items=limit)
         returnable = UsersOut(users=all_users, pagination=pagination)
         return returnable

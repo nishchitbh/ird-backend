@@ -18,7 +18,9 @@ class MongoRepo(IDataRepo):
         return result
 
     def update(self, identifier: dict, update_data: dict) -> dict:
-        update_fields = {key: value for key, value in update_data.items() if value is not None}
+        update_fields = {
+            key: value for key, value in update_data.items() if value is not None
+        }
         result = self.db[self.collection].find_one_and_update(
             identifier, {"$set": update_fields}, return_document=True
         )

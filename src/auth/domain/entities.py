@@ -44,19 +44,21 @@ class UserBase(BaseModel):
 class UserCreate(UserBase): ...
 
 
-
 class UserOut(UserBase):
     created_at: datetime
     updated_at: Optional[datetime] = None
     last_login_at: Optional[datetime] = None
 
+
 class Pagination(BaseModel):
     page: int
     items: int
 
+
 class UsersOut(BaseModel):
     users: List[UserOut]
     pagination: Pagination
+
 
 class UserLogin(BaseModel):
     email: CompanyEmail
@@ -102,6 +104,7 @@ class UserStore(UserBase):
     updated_at: Optional[datetime] = None
     last_login_at: Optional[datetime] = None
     soft_deleted: Optional[bool] = None
+
 
 class UserUpdateBase(BaseModel):
     full_name: Optional[str] = None

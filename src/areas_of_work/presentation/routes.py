@@ -7,7 +7,7 @@ from src.areas_of_work.domain.entities import (
 from src.areas_of_work.application.areas_of_work_use_cases import AreaUseCases
 from src.areas_of_work.presentation.config import get_areas_of_work_use_cases
 from src.areas_of_work.presentation.config import areas_router
-from src.auth.domain.entities.users_entity import UserOut
+from src.auth.domain.entities import UserOut
 from src.auth.presentation.config import get_current_user
 from fastapi import status, Depends
 

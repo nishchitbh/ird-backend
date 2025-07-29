@@ -35,7 +35,7 @@ def get_auth_use_cases() -> IAuthUseCases:
         auth_service=auth_service,
         user_repo=user_repo,
         user_service=user_service,
-        shared_service=SharedServices
+        shared_service=SharedServices,
     )
 
 

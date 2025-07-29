@@ -1,6 +1,6 @@
 from src.event_list.domain.entities import EventList, EventListUpdate
 from src.shared.domain.exceptions import UnauthorizedException
-from src.auth.domain.entities.users_entity import UserOut
+from src.auth.domain.entities import UserOut
 from src.event_list.domain.repositories import IEventListRepo
 from src.event_list.domain.services import EventListService
 

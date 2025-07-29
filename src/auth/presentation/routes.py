@@ -234,8 +234,8 @@ class UserRoutes:
 
     def get_all_users(
         self,
-        page:int = 1,
-        limit:int = 10,
+        page: int = 1,
+        limit: int = 10,
         current_user: UserOut = get_current_user("super", "admin"),
         auth_use_cases: IAuthUseCases = Depends(get_auth_use_cases),
     ):

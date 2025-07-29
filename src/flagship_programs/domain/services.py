@@ -1,4 +1,4 @@
-from src.flagship_programs.domain.entities import FlagshipProgram, FlagshipProgramUpdate
+from src.flagship_programs.domain.entities import FlagshipProgram
 from src.flagship_programs.domain.repositories import IFlagshipRepo
 
 

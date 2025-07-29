@@ -29,6 +29,12 @@ app.middleware("http")(rate_limit_middleware)
 app.middleware("http")(generic_middleware)
 
 
+@app.get("/")
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
 app.include_router(AuthRoutes().router)
 app.include_router(UserRoutes().router)
 app.include_router(areas_router)

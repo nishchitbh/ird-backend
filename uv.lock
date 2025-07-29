@@ -277,7 +277,7 @@ requires-dist = [
     { name = "fastapi", extras = ["all"], specifier = ">=0.115.14" },
     { name = "passlib", extras = ["bcrypt"], specifier = ">=1.7.4" },
     { name = "pyjwt", specifier = ">=2.10.1" },
-    { name = "pymongo", specifier = ">=4.13.2" },
+    { name = "pymongo", extras = ["srv"], specifier = ">=4.13.2" },
     { name = "redis", specifier = ">=6.2.0" },
     { name = "tzlocal", specifier = ">=5.3.1" },
 ]

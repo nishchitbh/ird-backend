@@ -26,7 +26,9 @@ async def rate_limit_middleware(request: Request, call_next):
     Currently, this is a simple rate limiter that uses Redis to track requests.
     It limits the number of requests per client per method and route within a specified period. (So that when frontend calls the API for multiple rates, it does not get rate limited)
     """
-    if request.url.path.startswith(("/docs", "/redoc", "/openapi.json")):
+    if request.url.path.startswith(
+        ("/", "/health", "/docs", "/redoc", "/openapi.json")
+    ):
         return await call_next(request)
 
     client = request.client.host

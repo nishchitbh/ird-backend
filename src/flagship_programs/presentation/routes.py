@@ -41,7 +41,7 @@ def get_one(
 )
 def create(
     content: FlagshipProgram,
-    current_user: UserOut = Depends(get_current_user),
+    current_user: UserOut = get_current_user("admin", "super"),
     use_cases: FlagshipUseCases = Depends(get_flagship_programse_cases),
 ):
     """
@@ -57,7 +57,7 @@ def create(
 def update(
     id: str,
     content: FlagshipProgramUpdate,
-    current_user: UserOut = Depends(get_current_user),
+    current_user: UserOut = get_current_user("admin", "super"),
     use_cases: FlagshipUseCases = Depends(get_flagship_programse_cases),
 ):
     """
@@ -70,7 +70,7 @@ def update(
 @flagship_programs_router.delete("/{id}", status_code=status.HTTP_200_OK)
 def delete(
     id: str,
-    current_user: UserOut = Depends(get_current_user),
+    current_user: UserOut = get_current_user("admin", "super"),
     use_cases: FlagshipUseCases = Depends(get_flagship_programse_cases),
 ):
     """

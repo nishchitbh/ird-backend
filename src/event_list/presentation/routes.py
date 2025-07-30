@@ -31,7 +31,7 @@ def get_one(id: str, use_cases: EventListUseCases = Depends(get_event_list_cases
 )
 def create(
     content: EventList,
-    current_user: UserOut = Depends(get_current_user),
+    current_user: UserOut = get_current_user("admin", "super"),
     use_cases: EventListUseCases = Depends(get_event_list_cases),
 ):
     """
@@ -47,7 +47,7 @@ def create(
 def update(
     id: str,
     content: EventListUpdate,
-    current_user: UserOut = Depends(get_current_user),
+    current_user: UserOut = get_current_user("admin", "super"),
     use_cases: EventListUseCases = Depends(get_event_list_cases),
 ):
     """
@@ -60,7 +60,7 @@ def update(
 @event_list_router.delete("/{id}", status_code=status.HTTP_200_OK)
 def delete(
     id: str,
-    current_user: UserOut = Depends(get_current_user),
+    current_user: UserOut = get_current_user("admin", "super"),
     use_cases: EventListUseCases = Depends(get_event_list_cases),
 ):
     """

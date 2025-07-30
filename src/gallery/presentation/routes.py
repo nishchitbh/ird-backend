@@ -22,7 +22,7 @@ async def upload_photo(
     caption: Optional[str] = Query(None, description="Caption"),
     file: UploadFile = File(...),
     gallery_use_cases: GalleryUseCases = Depends(get_gallery_use_cases),
-    current_user: UserOut = Depends(get_current_user),
+    current_user: UserOut = get_current_user("admin", "super"),
 ):
     try:
         gallery_data = GalleryUpload(
@@ -72,7 +72,7 @@ async def update_gallery_by_id(
     gallery_id: str,
     gallery_data: GalleryUpdate,
     gallery_use_cases: GalleryUseCases = Depends(get_gallery_use_cases),
-    current_user: UserOut = Depends(get_current_user),
+    current_user: UserOut = get_current_user("admin", "super"),
 ):
     try:
         return gallery_use_cases.update_gallery(
@@ -86,7 +86,7 @@ async def update_gallery_by_id(
 async def delete_gallery_by_id(
     gallery_id: str,
     gallery_use_cases: GalleryUseCases = Depends(get_gallery_use_cases),
-    current_user: UserOut = Depends(get_current_user),
+    current_user: UserOut = get_current_user("admin", "super"),
 ):
     try:
         return gallery_use_cases.delete_gallery(

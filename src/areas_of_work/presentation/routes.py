@@ -39,7 +39,7 @@ def get_one_area(
 )
 def create_area(
     content: AreasOfWork,
-    current_user: UserOut = Depends(get_current_user),
+    current_user: UserOut = get_current_user("admin", "super"),
     use_cases: AreaUseCases = Depends(get_areas_of_work_use_cases),
 ):
     """
@@ -57,7 +57,7 @@ def create_area(
 def update_area(
     area_id: str,
     content: AreasOfWorkUpdate,
-    current_user: UserOut = Depends(get_current_user),
+    current_user: UserOut = get_current_user("admin", "super"),
     use_cases: AreaUseCases = Depends(get_areas_of_work_use_cases),
 ):
     """
@@ -70,7 +70,7 @@ def update_area(
 @areas_router.delete("/{area_id}", status_code=status.HTTP_200_OK)
 def delete_area(
     area_id: str,
-    current_user: UserOut = Depends(get_current_user),
+    current_user: UserOut = get_current_user("admin", "super"),
     use_cases: AreaUseCases = Depends(get_areas_of_work_use_cases),
 ):
     """

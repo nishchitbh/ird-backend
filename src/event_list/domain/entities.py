@@ -22,4 +22,4 @@ class EventListUpdate(BaseModel):
 
 
 class EventLists(BaseModel):
-    eventLists: List[EventList]
+    eventLists: List[EventList | None]

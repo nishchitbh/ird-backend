@@ -20,7 +20,7 @@ def get_all(use_cases: FlagshipUseCases = Depends(get_flagship_programse_cases))
     Gets all Join Us Programs.
     """
     result = use_cases.get_all_flagship_programs()
-    return {"data": result}
+    return result
 
 
 @flagship_programs_router.get(
@@ -33,7 +33,7 @@ def get_one(
     Gets one Join Us Program.
     """
     result = use_cases.get_one_flagship_programs(id)
-    return {"data": result}
+    return result
 
 
 @flagship_programs_router.post(
@@ -47,8 +47,8 @@ def create(
     """
     Creates an Join Us Program.
     """
-    result = use_cases.create_flagship_programs(content, current_user)
-    return {"data": result}
+    result = use_cases.create_flagship_programs(content)
+    return result
 
 
 @flagship_programs_router.patch(
@@ -63,8 +63,8 @@ def update(
     """
     Updates an Join Us Program.
     """
-    message = use_cases.update_flagship_programs(id, content, current_user)
-    return {"data": message}
+    result = use_cases.update_flagship_programs(id, content)
+    return result
 
 
 @flagship_programs_router.delete("/{id}", status_code=status.HTTP_200_OK)
@@ -76,4 +76,4 @@ def delete(
     """
     Deletes an Join Us Program.
     """
-    return use_cases.delete_flagship_programs(id, current_user)
+    return use_cases.delete_flagship_programs(id)

@@ -23,10 +23,3 @@ class AreasOfWorkUpdate(BaseModel):
     initiativeLists: Optional[List[InitiativeList]] = None
     published: Optional[bool] = None
 
-
-class AreasOfWorkResponse(BaseModel):
-    data: AreasOfWork
-
-
-class AreasListResponse(BaseModel):
-    data: List[AreasOfWork]

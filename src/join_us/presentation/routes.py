@@ -20,7 +20,7 @@ def get_all(use_cases: JoinUsUseCases = Depends(get_join_use_cases)):
     Gets all Join Us Programs.
     """
     result = use_cases.get_all_join_us()
-    return {"data": result}
+    return result
 
 
 @join_us_router.get(
@@ -31,7 +31,7 @@ def get_one(id: str, use_cases: JoinUsUseCases = Depends(get_join_use_cases)):
     Gets one Join Us Program.
     """
     result = use_cases.get_one_join_us(id)
-    return {"data": result}
+    return result
 
 
 @join_us_router.post(
@@ -45,8 +45,8 @@ def create(
     """
     Creates an Join Us Program.
     """
-    result = use_cases.create_join_us(content, current_user)
-    return {"data": result}
+    result = use_cases.create_join_us(content)
+    return result
 
 
 @join_us_router.patch(
@@ -61,8 +61,8 @@ def update(
     """
     Updates an Join Us Program.
     """
-    message = use_cases.update_join_us(id, content, current_user)
-    return {"data": message}
+    result = use_cases.update_join_us(id, content)
+    return result
 
 
 @join_us_router.delete("/{id}", status_code=status.HTTP_200_OK)
@@ -74,4 +74,4 @@ def delete(
     """
     Deletes an Join Us Program.
     """
-    return use_cases.delete_join_us(id, current_user)
+    return use_cases.delete_join_us(id)

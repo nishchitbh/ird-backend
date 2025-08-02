@@ -8,3 +8,6 @@ class EventListService:
 
     def __init__(self, repo: IEventListRepo):
         self.repo = repo
+
+    def verify_creation(self, content: dict):
+        pass

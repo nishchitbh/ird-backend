@@ -45,8 +45,8 @@ async def get_gallery(
 ):
     try:
         raw = gallery_use_cases.read_all()
-        items = [{**d, "_id": str(d["_id"])} for d in raw]
-        return {"data": items}
+        result = [{**d, "_id": str(d["_id"])} for d in raw]
+        return result
     except AppException as e:
         return HTTPException(status_code=e.status_code, detail=e.detail)
 

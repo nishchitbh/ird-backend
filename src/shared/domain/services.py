@@ -5,7 +5,6 @@ from typing import Dict, List, Any
 from fastapi.responses import StreamingResponse
 from src.shared.domain.exceptions import InvalidInputException
 
-
 class SharedServices:
     @staticmethod
     def dict_to_streaming_response(

@@ -7,12 +7,14 @@ from fastapi import status, Depends
 
 
 @event_list_router.get("/", response_model=EventLists, status_code=status.HTTP_200_OK)
-def get_all(use_cases: EventList = Depends(get_event_list_cases)):
+def get_all(use_cases: EventListUseCases = Depends(get_event_list_cases)):
     """
     Gets all Event Lists.
     """
-    result = use_cases.get_all_flagship_programs()
-    return {"data": result}
+    result = use_cases.get_all_events()
+    return {
+        "eventLists": result or [] 
+    }
 
 
 @event_list_router.get(
@@ -22,8 +24,8 @@ def get_one(id: str, use_cases: EventListUseCases = Depends(get_event_list_cases
     """
     Gets one Event List.
     """
-    result = use_cases.get_one_flagship_programs(id)
-    return {"data": result}
+    result = use_cases.get_one_event(id)
+    return result
 
 
 @event_list_router.post(
@@ -37,8 +39,8 @@ def create(
     """
     Creates an Event List.
     """
-    result = use_cases.create_flagship_programs(content, current_user)
-    return {"data": result}
+    result = use_cases.create_event_list(content)
+    return result
 
 
 @event_list_router.patch(
@@ -53,8 +55,8 @@ def update(
     """
     Updates an Event List.
     """
-    message = use_cases.update_flagship_programs(id, content, current_user)
-    return {"data": message}
+    result = use_cases.update_event_list(id, content)
+    return result
 
 
 @event_list_router.delete("/{id}", status_code=status.HTTP_200_OK)
@@ -66,4 +68,4 @@ def delete(
     """
     Deletes an Event List.
     """
-    return use_cases.delete_flagship_programs(id, current_user)
+    return use_cases.delete_event_list(id)

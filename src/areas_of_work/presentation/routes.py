@@ -1,8 +1,7 @@
+from typing import List
 from src.areas_of_work.domain.entities import (
     AreasOfWork,
     AreasOfWorkUpdate,
-    AreasListResponse,
-    AreasOfWorkResponse,
 )
 from src.areas_of_work.application.areas_of_work_use_cases import AreaUseCases
 from src.areas_of_work.presentation.config import get_areas_of_work_use_cases
@@ -12,17 +11,17 @@ from src.auth.presentation.config import get_current_user
 from fastapi import status, Depends
 
 
-@areas_router.get("/", response_model=AreasListResponse, status_code=status.HTTP_200_OK)
+@areas_router.get("/", response_model=List[AreasOfWork], status_code=status.HTTP_200_OK)
 def get_areas_of_work(use_cases: AreaUseCases = Depends(get_areas_of_work_use_cases)):
     """
     Gets all areas of work.
     """
     result = use_cases.get_all_areas()
-    return {"data": result}
+    return result
 
 
 @areas_router.get(
-    "/{area_id}", response_model=AreasOfWorkResponse, status_code=status.HTTP_200_OK
+    "/{area_id}", response_model=AreasOfWork, status_code=status.HTTP_200_OK
 )
 def get_one_area(
     area_id: str, use_cases: AreaUseCases = Depends(get_areas_of_work_use_cases)
@@ -31,11 +30,11 @@ def get_one_area(
     Gets one area of work.
     """
     result = use_cases.get_one_area(area_id)
-    return {"data": result}
+    return result
 
 
 @areas_router.post(
-    "/", response_model=AreasOfWorkResponse, status_code=status.HTTP_201_CREATED
+    "/", response_model=AreasOfWork, status_code=status.HTTP_201_CREATED
 )
 def create_area(
     content: AreasOfWork,
@@ -45,14 +44,14 @@ def create_area(
     """
     Creates an area of work.
     """
-    result = use_cases.create_area(content, current_user)
-    return {"data": result}
+    result = use_cases.create_area(content)
+    return result
 
 
 @areas_router.patch(
     "/{area_id}",
     status_code=status.HTTP_201_CREATED,
-    response_model=AreasOfWorkResponse,
+    response_model=AreasOfWork,
 )
 def update_area(
     area_id: str,
@@ -63,8 +62,8 @@ def update_area(
     """
     Updates an area of work.
     """
-    message = use_cases.update_area(area_id, content, current_user)
-    return {"data": message}
+    result = use_cases.update_area(area_id, content)
+    return result
 
 
 @areas_router.delete("/{area_id}", status_code=status.HTTP_200_OK)
@@ -76,4 +75,4 @@ def delete_area(
     """
     Deletes an area of work.
     """
-    return use_cases.delete_area(area_id, current_user)
+    return use_cases.delete_area(area_id)

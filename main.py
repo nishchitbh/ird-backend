@@ -32,7 +32,11 @@ app.middleware("http")(generic_middleware)
 @app.get("/")
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    return (
+        {"status": "ok", "message": "Go to /docs for documentation."}
+        if not IS_PROD
+        else {"status": "ok", "message": "Healthy!"}
+    )
 
 
 app.include_router(AuthRoutes().router)

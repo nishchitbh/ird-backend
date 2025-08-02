@@ -10,10 +10,10 @@ event_list_router = APIRouter(prefix="/event-lists", tags=["Event Lists"])
 
 def get_event_list_cases():
     db = get_db()
-    repo = MongoRepo(db=db, collection="flagship_programs")
-    flagship_programs_repo = EventListRepo(repo=repo)
-    flagship_services = EventListService(repo=flagship_programs_repo)
+    repo = MongoRepo(db=db, collection="events-lists")
+    event_list_repo = EventListRepo(repo=repo)
+    event_list_services = EventListService(repo=event_list_repo)
     return EventListUseCases(
-        flagship_programs_repo=flagship_programs_repo,
-        flagship_services=flagship_services,
+        event_list_repo=event_list_repo,
+        event_list_services=event_list_services,
     )

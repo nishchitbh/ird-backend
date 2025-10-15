@@ -27,7 +27,7 @@ class Setting:
     company_domain = os.getenv("COMPANY_DOMAIN")
     redis_host = os.getenv("REDIS_HOST")
     redis_port = os.getenv("REDIS_PORT")
-    redis_usernamee = os.getenv("REDIS_USERNAME")
+    redis_username = os.getenv("REDIS_USERNAME")
     redis_password = os.getenv("REDIS_PASSWORD")
 
 

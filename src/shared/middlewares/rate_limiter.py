@@ -11,28 +11,27 @@ load_dotenv()
 REDIS_URL = os.getenv("REDIS_URL")
 CALLS = int(os.getenv("RATE_LIMIT_CALLS", 5))
 PERIOD = int(os.getenv("RATE_LIMIT_PERIOD", 60))
-
+EXCLUDED_PATHS = ["/", "/health", "/docs", "/redoc", "/openapi.json"]
 redis = Redis(
     host=setting.redis_host,
     port=setting.redis_port,
     decode_responses=True,
-    username=setting.redis_usernamee,
+    username=setting.redis_username,
     password=setting.redis_password,
 )
-
 
 async def rate_limit_middleware(request: Request, call_next):
     """
     Currently, this is a simple rate limiter that uses Redis to track requests.
     It limits the number of requests per client per method and route within a specified period. (So that when frontend calls the API for multiple rates, it does not get rate limited)
     """
-    if request.url.path.startswith(
-        ("/", "/health", "/docs", "/redoc", "/openapi.json")
-    ):
+    if request.url.path in EXCLUDED_PATHS:
         return await call_next(request)
 
     client = request.client.host
+    print(client)
     method = request.method
+    print(method)
     route = request.url.path
     window = int(time.time() // PERIOD)
     key = f"rate:{client}:{window}:{method}:{route}"

@@ -29,9 +29,7 @@ async def rate_limit_middleware(request: Request, call_next):
         return await call_next(request)
 
     client = request.client.host
-    print(client)
     method = request.method
-    print(method)
     route = request.url.path
     window = int(time.time() // PERIOD)
     key = f"rate:{client}:{window}:{method}:{route}"

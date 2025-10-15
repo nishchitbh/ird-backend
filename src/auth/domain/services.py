@@ -15,7 +15,11 @@ import jwt
 class AuthService:
     def __init__(self, user_repo: IUserRepository):
         self.user_repo = user_repo
-        self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+        self.pwd_context = CryptContext(
+            schemes=["argon2"],
+            default="argon2",
+            deprecated="auto",
+        )
         self.logger = logging.getLogger(__name__)
 
     def hash_password(self, plain_password: str) -> str:

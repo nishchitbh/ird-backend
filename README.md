@@ -8,6 +8,7 @@ Before you begin, ensure you have the following installed:
 
 *   **Python:**  Download and install Python 3.10 or higher from the official Python website ([https://www.python.org/downloads/](https://www.python.org/downloads/)).
 *   **Git:** Download and install Git from the official Git website ([https://git-scm.com/downloads](https://git-scm.com/downloads)).
+*   **uv:** Install uv using pip: `pip install uv`
 
 ## Setup Instructions
 
@@ -34,22 +35,33 @@ Before you begin, ensure you have the following installed:
 
 3.  **Install Dependencies:**
 
-    Install the required Python packages using pip:
+    Install the required Python packages using uv sync:
 
     ```bash
-    pip install -r requirements.txt
+    uv sync
     ```
 
 4.  **Environment Variables:**
 
     Create a `.env` file in the project root directory. Add the following environment variables to this file.  These variables are crucial for the application to function correctly.
     ```
-    MONGODB_HOST=mongodb://localhost:27017
-    AUTH_SECRET=your_auth_secret
-    ACCESS_TOKEN_EXPIRY_TIME=30
-    ALGORITHM=HS256
+    ENV=dev
+MONGODB_HOST=
+MONGODB_PORT=27017
+AUTH_SECRET=
+ACCESS_TOKEN_EXPIRY_TIME=30
+ALGORITHM=HS256
+UPLOAD_FOLDER=static/uploads
+ALLOWED_EXTENSIONS=.jpg,.jpeg,.png,.webp
+CHUNK_SIZE=1048576
+MAX_FILE_SIZE = 10485760
+COMPANY_DOMAIN=ird.com.np
+REDIS_URL=redis://redis:6379/
+MONGO_INITDB_ROOT_USERNAME=
+MONGO_INITDB_ROOT_PASSWORD=
+MONGO_INITDB_DATABASE=
     ```
-    **Note:** The application requires `MONGODB_HOST` for the MongoDB connection, `AUTH_SECRET` for authentication, `ACCESS_TOKEN_EXPIRY_TIME` (in days) for access token expiry, and `ALGORITHM` for the hashing algorithm. Please replace `your_auth_secret` with a secure, randomly generated string.
+    **Note:** The application requires `MONGODB_HOST` for the MongoDB connection, `AUTH_SECRET` for authentication, `ACCESS_TOKEN_EXPIRY_TIME` (in days) for access token expiry, and `ALGORITHM` for the hashing algorithm. Please replace `your_auth_secret` with a secure, randomly generated string. Also, ensure that `MONGODB_PORT` is correctly set and other variables are configured according to your needs.
 
 ## Running the Application
 

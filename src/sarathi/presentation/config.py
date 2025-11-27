@@ -6,8 +6,6 @@ from src.shared.infrastructure.db_config import get_db
 
 sarathi_router = APIRouter(prefix="/sarathi", tags=["Sarathi"])
 
-from src.sarathi.domain.services import SarathiDomainService
-
 from src.shared.infrastructure.data_repo_impl import MongoRepo
 from src.shared.infrastructure.db_config import get_db
 
@@ -23,9 +21,6 @@ def get_sarathi_use_cases():
 
     # Infrastructure implementation of the domain interface
     infra_repo = SarathiRepo(repo=mongo_repo)
-
-    # Domain services (business logic)
-    sarathi_services = SarathiDomainService(repo=infra_repo)
 
     # Application layer use cases
     return SarathiAppService(

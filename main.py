@@ -3,11 +3,12 @@ from dotenv import load_dotenv
 
 from fastapi import FastAPI
 
-from src.areas_of_work.presentation.routes import areas_router
-from src.event_list.presentation.routes import event_list_router
-from src.flagship_programs.presentation.routes import flagship_programs_router
-from src.gallery.presentation.routes import gallery_router
-from src.join_us.presentation.routes import join_us_router
+# from src.areas_of_work.presentation.routes import areas_router
+# from src.event_list.presentation.routes import event_list_router
+# from src.flagship_programs.presentation.routes import flagship_programs_router
+# from src.gallery.presentation.routes import gallery_router
+# from src.join_us.presentation.routes import join_us_router
+from src.sarathi.presentation.routes import sarathi_router
 from src.auth.presentation.routes import AuthRoutes, UserRoutes
 
 from src.shared.middlewares.rate_limiter import rate_limit_middleware
@@ -41,8 +42,9 @@ async def health():
 
 app.include_router(AuthRoutes().router)
 app.include_router(UserRoutes().router)
-app.include_router(areas_router)
-app.include_router(gallery_router)
-app.include_router(flagship_programs_router)
-app.include_router(event_list_router)
-app.include_router(join_us_router)
+# app.include_router(areas_router)
+# app.include_router(gallery_router)
+# app.include_router(flagship_programs_router)
+# app.include_router(event_list_router)
+# app.include_router(join_us_router)
+app.include_router(sarathi_router)
